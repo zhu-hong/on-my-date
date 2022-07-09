@@ -20,6 +20,7 @@ importers:
 
   packages/datepicker:
     specifiers:
+      '@unocss/transformer-directives': 0.44.0
       '@vitejs/plugin-vue2': 1.1.2
       '@zhu-hong/datematrix': workspace:*
       D: 1.0.0
@@ -28,6 +29,7 @@ importers:
       unocss: 0.44.0
       vue: 2.7.4
     dependencies:
+      '@unocss/transformer-directives': 0.44.0
       '@zhu-hong/datematrix': link:../datematrix
       D: 1.0.0
       unocss: 0.44.0_vite@2.9.9

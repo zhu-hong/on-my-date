@@ -1,0 +1,41 @@
+{
+  "name": "@zhu-hong/datepicker",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "description": "vue date_picker",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@unocss/transformer-directives": "0.44.0",
+    "@zhu-hong/datematrix": "workspace:*",
+    "D": "1.0.0",
+    "unocss": "0.44.0",
+    "vue": "2.7.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue2": "1.1.2",
+    "element-ui": "2.15.9",
+    "postcss-nested": "5.0.6"
+  },
+  "license": "MIT",
+  "author": "zhu-hong",
+  "homepage": "https://github.com/zhu-hong/oh-my-date",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhu-hong/oh-my-date.git"
+  },
+  "keywords": [
+    "datepicker",
+    "vue date picker"
+  ],
+  "bugs": {
+    "url": "https://github.com/zhu-hong/oh-my-date/issues"
+  }
+}
