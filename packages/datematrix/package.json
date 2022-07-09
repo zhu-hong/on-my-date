@@ -1,0 +1,43 @@
+{
+  "name": "@zhu-hong/datematrix",
+  "version": "1.0.0",
+  "description": "generated date matrix",
+  "keywords": [
+    "datematrix",
+    "date-matrix",
+    "lunar calendar",
+    "china lunar calendar",
+    "农历"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:lib": "unbuild",
+    "prepublish": "unbuild"
+  },
+  "author": "zhu-hong",
+  "license": "MIT",
+  "repository": {
+    "url": "git+https://github.com/zhu-hong/on-my-date.git"
+  },
+  "homepage": "https://github.com/zhu-hong/on-my-date",
+  "bugs": {
+    "url": "https://github.com/zhu-hong/on-my-date/issues"
+  },
+  "devDependencies": {
+    "unbuild": "0.7.4"
+  }
+}
