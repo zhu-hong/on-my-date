@@ -1,4 +1,4 @@
-export interface ILunarInfo {
+export interface ILunar {
   /**
    * 农历时间
    */
@@ -51,14 +51,23 @@ export interface ILunarInfo {
   astro: string,
 }
 
-export interface IDateItem {
+export interface IMatrixItem {
+  dateStr: string
   year: number
   month: number
   date: number
   day: number
   inOtherMonth: boolean
-  dateStr: string
   timestamp: number
-  lunar?: ILunarInfo
+  lunar?: ILunar
 }
 
+export interface IDateDetail {
+  dateStr: string
+  year: number
+  month: number
+  date: number
+  day: number
+  hour: number
+  minute: number
+}

@@ -1,4 +1,4 @@
-import type { ILunarInfo } from './types'
+import type { ILunar } from './types'
 import { isLeapYear, month30day } from './util'
 
 /**
@@ -301,7 +301,7 @@ function parseZodiac(year: number): string {
   return zodiacSet[(year - 4) % 12]
 }
 
-export function useLunar(year: number, month: number, date: number): ILunarInfo {
+export function useLunar(year: number, month: number, date: number): ILunar {
   /**
    * 验证时间
    */

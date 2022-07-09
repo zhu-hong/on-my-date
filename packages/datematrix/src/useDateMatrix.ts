@@ -1,5 +1,5 @@
 import { isLeapYear, month30day, month31day } from './util'
-import type { IDateItem } from './types'
+import type { IMatrixItem } from './types'
 
 function getMonthTotalDay(year: number, month: number): number {
   if (month31day.includes(month)) {
@@ -15,10 +15,10 @@ function getMonthTotalDay(year: number, month: number): number {
   }
 }
 
-function getMonthDaysArr(year: number, month: number, use_monday_start: boolean): IDateItem[][] {
+function getMonthDaysArr(year: number, month: number, use_monday_start: boolean): IMatrixItem[][] {
   let totalDay = getMonthTotalDay(year, month)
 
-  let daysArr: IDateItem[][] = [
+  let daysArr: IMatrixItem[][] = [
     // @ts-ignore
     Array.from({ length: 7 }, () => null),
     // @ts-ignore
@@ -48,12 +48,12 @@ function getMonthDaysArr(year: number, month: number, use_monday_start: boolean)
 
 
     daysArr[curDayLevel][curDateDay] = {
+      dateStr,
       year,
       month,
       date,
       day: curDate.getDay(),
       inOtherMonth: false,
-      dateStr,
       timestamp: curDate.getTime(),
     }
 
@@ -65,7 +65,7 @@ function getMonthDaysArr(year: number, month: number, use_monday_start: boolean)
   return daysArr
 }
 
-function getPrevMonthFillDays(year: number, month: number, length: number, use_monday_start: boolean): IDateItem[] {
+function getPrevMonthFillDays(year: number, month: number, length: number, use_monday_start: boolean): IMatrixItem[] {
   let prevMonth = month - 1
   if (prevMonth === 0) {
     prevMonth = 12
@@ -79,7 +79,7 @@ function getPrevMonthFillDays(year: number, month: number, length: number, use_m
   }).slice(prevMonthDaysArr.length - length)
 }
 
-function getNextMonthFillDays(year: number, month: number, length: number, use_monday_start: boolean): IDateItem[] {
+function getNextMonthFillDays(year: number, month: number, length: number, use_monday_start: boolean): IMatrixItem[] {
   let nextMonth = month + 1
   if (nextMonth > 12) {
     nextMonth = 1
@@ -100,7 +100,7 @@ function verifyDate(year: number, month: number): boolean {
   return true
 }
 
-export function useDateMatrix(year: number = new Date().getFullYear(), month: number = new Date().getMonth() + 1, use_monday_start: boolean = false): IDateItem[][] {
+export function useDateMatrix(year: number = new Date().getFullYear(), month: number = new Date().getMonth() + 1, use_monday_start: boolean = false): IMatrixItem[][] {
   if(!verifyDate(year, month)) throw Error('this date is not validate')
 
   const daysArr = getMonthDaysArr(year, month, use_monday_start)
