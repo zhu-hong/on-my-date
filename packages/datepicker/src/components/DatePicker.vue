@@ -41,7 +41,6 @@ let curDate = ref(new Date(props.time))
 let mode = ref('date')
 let viewYearInc = ref(0)
 
-
 /**
  * @type {{
     month: number
@@ -66,6 +65,25 @@ const viewYearMonth = computed(() => {
       disable,
       month,
       isSelectMonth: viewYear.value === curDateInfo.value.year && viewMonth.value === month
+    }
+  })
+})
+
+/**
+ * @type {{
+    year: number
+    disable: boolean
+    isSelectYear: boolean
+  }[]}
+ */
+const viewYears = computed(() => {
+  return Array.from({ length: 12 }, (_, num) => {
+    const year = viewYear.value + num + viewYearInc.value * 12
+
+    return {
+      year,
+      disable: year > maxTimeInfo.value.year || year < minTimeInfo.value.year,
+      isSelectYear: year === curDateInfo.value.year
     }
   })
 })
@@ -192,6 +210,30 @@ const selectViewMonth = (month) => {
   viewMonth.value = month.month
   selectMode('date')
 }
+
+const incrementViewYearInc = (count) => {
+
+  if(viewYears.value.map(({ year }) => year).includes(minTimeInfo.value.year)) return
+  if(viewYears.value.map(({ year }) => year).includes(minTimeInfo.year)) return
+
+  viewYearInc.value += count
+}
+
+/**
+ * @param {{
+    year: number
+    disable: boolean
+    isSelectYear: boolean
+  }} year 
+ */
+const selectViewYear = (year) => {
+  if(year.disable) return
+
+  viewYear.value = year.year
+  viewYearInc.value = 0
+
+  selectMode('month')
+}
 </script>
 
 <template>
@@ -219,7 +261,13 @@ const selectViewMonth = (month) => {
           <svg :class="['cursor-pointer', viewYear >= maxTimeInfo.year && $style.disable]" @click="incrementMonth(12)" xmlns="http://www.w3.org/2000/svg" width="16px" height="16px"><path d="M6.866 2.2a.685.685 0 0 0 0 .967L11.687 8l-4.82 4.833a.685.685 0 0 0 0 .967.68.68 0 0 0 .964 0l5.303-5.317a.685.685 0 0 0 0-.966L7.83 2.2a.68.68 0 0 0-.965 0Zm-4 0a.685.685 0 0 0 0 .967L7.687 8l-4.82 4.833a.685.685 0 0 0 0 .967.68.68 0 0 0 .964 0l5.303-5.317a.685.685 0 0 0 0-.966L3.83 2.2a.68.68 0 0 0-.965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
         </template>
         <template v-else>
-
+          <svg :class="['cursor-pointer', viewYears.map(({ year }) => year).includes(minTimeInfo.year) && $style.disable]" @click="incrementViewYearInc(-1)" xmlns="http://www.w3.org/2000/svg" width="16px" height="16px"><path d="M9.134 2.2c.266.267.266.7 0 .967L4.313 8l4.82 4.833c.267.267.267.7 0 .967a.68.68 0 0 1-.964 0L2.866 8.483a.685.685 0 0 1 0-.966L8.17 2.2a.68.68 0 0 1 .965 0Zm4 0c.266.267.266.7 0 .967L8.313 8l4.82 4.833c.267.267.267.7 0 .967a.68.68 0 0 1-.964 0L6.866 8.483a.685.685 0 0 1 0-.966L12.17 2.2a.68.68 0 0 1 .965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
+          <div class="flex-1 flex justify-center items-center gap-8px">
+            {{ viewYears[0].year }}
+            <span>-</span>
+            {{ viewYears[viewYears.length - 1].year }}
+          </div>
+          <svg :class="['cursor-pointer', viewYears.map(({ year }) => year).includes(maxTimeInfo.year) && $style.disable]" @click="incrementViewYearInc(1)" xmlns="http://www.w3.org/2000/svg" width="16px" height="16px"><path d="M6.866 2.2a.685.685 0 0 0 0 .967L11.687 8l-4.82 4.833a.685.685 0 0 0 0 .967.68.68 0 0 0 .964 0l5.303-5.317a.685.685 0 0 0 0-.966L7.83 2.2a.68.68 0 0 0-.965 0Zm-4 0a.685.685 0 0 0 0 .967L7.687 8l-4.82 4.833a.685.685 0 0 0 0 .967.68.68 0 0 0 .964 0l5.303-5.317a.685.685 0 0 0 0-.966L3.83 2.2a.68.68 0 0 0-.965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
         </template>
       </div>
 
@@ -250,11 +298,24 @@ const selectViewMonth = (month) => {
           :class="[
             'w-48px h-32px flex-none flex justify-center items-center gap-4px cursor-pointer rounded',
             m.disable && $style.disable,
-            m.isSelectMonth && $style.curmonth,
+            m.isSelectMonth && $style.curmonthyear,
           ]"
           @click="selectViewMonth(m)"
         >
           <span>{{ m.month }}</span>月
+        </span>
+      </div>
+      <div class="h-248px px-34px py-24px flex flex-wrap justify-between items-center gap-y-22px gap-x-34px" v-else-if="mode === 'year'">
+        <span
+          v-for="y of viewYears"
+          :class="[
+            'w-48px h-32px flex-none flex justify-center items-center gap-4px cursor-pointer rounded',
+            y.disable && $style.disable,
+            y.isSelectYear && $style.curmonthyear,
+          ]"
+          @click="selectViewYear(y)"
+        >
+          <span>{{ y.year }}</span>
         </span>
       </div>
     </div>
@@ -306,7 +367,7 @@ const selectViewMonth = (month) => {
     }
   }
 
-  .curmonth {
+  .curmonthyear {
     background-color: #0c58d2;
     color: #ffffff;
   }
