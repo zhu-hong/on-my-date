@@ -18,5 +18,6 @@ export function useDateDetail(time: number | string): IDateDetail {
     day,
     hour, 
     minute,
+    timestamp: d.getTime(),
   }
 }

@@ -70,4 +70,5 @@ export interface IDateDetail {
   day: number
   hour: number
   minute: number
+  timestamp: number
 }
