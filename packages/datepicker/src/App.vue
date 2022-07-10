@@ -1,5 +1,4 @@
 <script setup>
-import { TimeTiny } from '@zhu-hong/datematrix';
 import { ref } from 'vue';
 import { DatePicker } from './components/index'
 
@@ -16,10 +15,6 @@ const shortcut = [
 const withTime = ref(true)
 
 const time = ref(new Date().getTime())
-
-// setInterval(() => {
-//   time.value = time.value + TimeTiny.Day
-// }, 1000)
 </script>
 
 <template>
