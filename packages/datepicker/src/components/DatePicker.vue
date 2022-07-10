@@ -23,6 +23,36 @@ const props = defineProps({
   maxTime: {
     default: () => new Date('2100-12-31').getTime()
   },
+  withTime: {
+    type: Boolean,
+    default: false,
+  },
+  shortcut: {
+    type: Array,
+    default: () => [],
+  },
+})
+
+/**
+ * @type {{
+    time: number
+    desc: string
+    disable: boolean
+  }[]}
+ */
+const shortcutOptions = computed(() => {
+  return props.shortcut.map((s) => {
+    let disable = false
+
+    if(s.time > maxTimeInfo.value.timestamp || s.time < minTimeInfo.value.timestamp) {
+      disable = true
+    }
+
+    return {
+      ...s,
+      disable,
+    }
+  })
 })
 
 const emits = defineEmits(['select'])
@@ -64,7 +94,7 @@ const viewYearMonth = computed(() => {
     return {
       disable,
       month,
-      isSelectMonth: viewYear.value === curDateInfo.value.year && viewMonth.value === month
+      isSelectMonth: viewMonth.value === month
     }
   })
 })
@@ -83,7 +113,7 @@ const viewYears = computed(() => {
     return {
       year,
       disable: year > maxTimeInfo.value.year || year < minTimeInfo.value.year,
-      isSelectYear: year === curDateInfo.value.year
+      isSelectYear: year === viewYear.value
     }
   })
 })
@@ -213,8 +243,8 @@ const selectViewMonth = (month) => {
 
 const incrementViewYearInc = (count) => {
 
-  if(viewYears.value.map(({ year }) => year).includes(minTimeInfo.value.year)) return
-  if(viewYears.value.map(({ year }) => year).includes(minTimeInfo.year)) return
+  if(count < 0 && viewYears.value.map(({ year }) => year).includes(minTimeInfo.value.year)) return
+  if(count > 0 && viewYears.value.map(({ year }) => year).includes(maxTimeInfo.value.year)) return
 
   viewYearInc.value += count
 }
@@ -234,10 +264,41 @@ const selectViewYear = (year) => {
 
   selectMode('month')
 }
+
+
+/**
+ * @param {{
+    time: number
+    desc: string
+    disable: boolean
+  }} shortcut
+ */
+const useSelectShortcut = (shortcut) => {
+  if(shortcut.disable) return
+
+  const { year, month, timestamp } = useDateDetail(shortcut.time)
+  viewYear.value = year
+  viewMonth.value = month
+
+  emits('select', timestamp)
+  curDate.value = new Date(timestamp)
+}
 </script>
 
 <template>
-  <div :class="[$style.container,'flex justify-between items-center rounded border border-[#DFE3E9] bg-white']">
+  <div :class="[$style.container,'flex justify-between items-center rounded border border-[#DFE3E9] bg-white h-280px box-border']">
+    <div v-show="shortcutOptions.length > 0" class="w-120px h-full border-r flex flex-col gap-14px overflow-auto items-center p-14px">
+      <span
+        v-for="o of shortcutOptions"
+        :class="[
+          'w-full truncate flex-none text-[#0c58d2] text-center cursor-pointer',
+          o.disable && $style.disable,
+        ]"
+        @click="useSelectShortcut(o)"
+      >
+        {{ o.desc }}
+      </span>
+    </div>
     <div class="w-280px flex flex-col">
       <div :class="[$style.header, 'h-40px border-b border-[#DFE3E9] flex justify-between items-center gap-12px px-18px']">
         <template v-if="mode === 'date'">
@@ -271,9 +332,9 @@ const selectViewYear = (year) => {
         </template>
       </div>
 
-      <div class="h-244px flex flex-col px-24px py-12px justify-between text-[#000c25] text-sm" v-if="mode === 'date'">
+      <div class="h-240px flex flex-col px-18px py-12px justify-between text-[#000c25]" v-if="mode === 'date'">
         <div class="flex justify-between items-center">
-          <span :class="[$style.day, 'cursor-default px-6px']" v-for="d of ['日', '一', '二', '三', '四', '五', '六']">{{ d }}</span>
+          <span :class="[$style.day, 'cursor-default px-4px']" v-for="d of ['日', '一', '二', '三', '四', '五', '六']">{{ d }}</span>
         </div>
         <div v-for="w of dateMartix" :class="$style.week">
           <span
@@ -292,7 +353,7 @@ const selectViewYear = (year) => {
           </span>
         </div>
       </div>
-      <div class="h-248px px-34px py-24px flex flex-wrap justify-between items-center gap-y-22px gap-x-34px" v-else-if="mode === 'month'">
+      <div class="h-240px px-32px py-18px flex flex-wrap justify-between items-center gap-y-22px gap-x-34px" v-else-if="mode === 'month'">
         <span
           v-for="m of viewYearMonth"
           :class="[
@@ -305,7 +366,7 @@ const selectViewYear = (year) => {
           <span>{{ m.month }}</span>月
         </span>
       </div>
-      <div class="h-248px px-34px py-24px flex flex-wrap justify-between items-center gap-y-22px gap-x-34px" v-else-if="mode === 'year'">
+      <div class="h-240px px-32px py-18px flex flex-wrap justify-between items-center gap-y-22px gap-x-34px" v-else-if="mode === 'year'">
         <span
           v-for="y of viewYears"
           :class="[
@@ -332,6 +393,8 @@ const selectViewYear = (year) => {
     user-select: none;
   }
 
+  font-size: 14px;
+
   .disable {
     cursor: not-allowed;
     opacity: .5;
@@ -341,7 +404,7 @@ const selectViewYear = (year) => {
     @apply flex justify-between items-center;
 
     .day {
-      @apply w-24px h-24px rounded flex justify-center items-center cursor-pointer flex-none;
+      @apply w-24px h-24px rounded flex justify-center cursor-pointer flex-none leading-24px;
 
       &:hover {
         background-color: #EEF1F5;
