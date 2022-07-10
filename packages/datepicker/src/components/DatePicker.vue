@@ -1,18 +1,12 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useDateMatrix, useDateDetail } from '@zhu-hong/datematrix'
 
 const todayDate = new Date()
 
+const todayDateStr = `${todayDate.getFullYear()}-${todayDate.getMonth() + 1}-${todayDate.getDate()}`
+
 const props = defineProps({
-  year: {
-    type: Number,
-    default: () => new Date().getFullYear(),
-  },
-  month: {
-    type: Number,
-    default: () => new Date().getMonth() + 1,
-  },
   time: {
     type: Number,
     default: () => new Date().getTime(),
@@ -31,6 +25,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+})
+
+const curDateInfo = computed(() => {
+  return useDateDetail(curDate.value)
 })
 
 /**
@@ -64,9 +62,9 @@ const maxTimeInfo = computed(() => {
   return useDateDetail(props.maxTime)
 })
 
-let viewYear = ref(props.year)
-let viewMonth = ref(props.month)
 let curDate = ref(new Date(props.time))
+let viewYear = ref(curDateInfo.value.year)
+let viewMonth = ref(curDateInfo.value.month)
 
 let mode = ref('date')
 let viewYearInc = ref(0)
@@ -207,8 +205,6 @@ const dateMartix = computed(() => {
   })
 })
 
-const todayDateStr = `${todayDate.getFullYear()}-${todayDate.getMonth() + 1}-${todayDate.getDate()}`
-
 /**
  * @param {{
     year: number
@@ -275,10 +271,6 @@ const useSelectDate = (day) => {
 
   useEimtSelect()
 }
-
-const curDateInfo = computed(() => {
-  return useDateDetail(curDate.value)
-})
 
 /**
  * 
@@ -444,10 +436,21 @@ const handleMinuteWhell = (e) => {
 
   curDate.value = new Date(`${dateStr} ${curtHour}:${incedMinute}`)
 }
+
+watch(
+  () => props.time,
+  (val) => {
+    const date = new Date(val)
+    curDate.value = date
+    mode.value = 'date'
+    viewYear.value = date.getFullYear()
+    viewMonth.value = date.getMonth() + 1
+  }
+)
 </script>
 
 <template>
-  <div :class="[$style.container,'flex flex-col justify-between items-center rounded border border-[#DFE3E9] bg-white box-border', withTime ? 'h-320px' : ' h-280px']">
+  <div :class="[$style.container,'flex flex-col justify-between items-center rounded border border-[#DFE3E9] bg-white box-border', withTime ? 'h-320px' : 'h-280px']">
     <div class="flex justify-between items-center">
       <div v-show="shortcutOptions.length > 0" class="w-100px h-full border-r flex flex-col gap-14px overflow-auto items-center p-14px">
         <span
@@ -518,7 +521,7 @@ const handleMinuteWhell = (e) => {
           <span
             v-for="m of viewYearMonth"
             :class="[
-              'w-48px h-32px flex-none flex justify-center items-center gap-4px cursor-pointer rounded',
+              'w-48px h-32px flex-none flex justify-center items-center gap-4px cursor-pointer rounded transition',
               m.disable && $style.disable,
               m.isSelectMonth && $style.curmonthyear,
             ]"
@@ -531,7 +534,7 @@ const handleMinuteWhell = (e) => {
           <span
             v-for="y of viewYears"
             :class="[
-              'w-48px h-32px flex-none flex justify-center items-center gap-4px cursor-pointer rounded',
+              'w-48px h-32px flex-none flex justify-center items-center gap-4px cursor-pointer rounded transition',
               y.disable && $style.disable,
               y.isSelectYear && $style.curmonthyear,
             ]"
@@ -563,7 +566,9 @@ const handleMinuteWhell = (e) => {
         </div>
       </div>
     </div>
-    <div v-show="withTime" class="w-full h-40px border-t flex justify-end items-center px-14px">确定</div>
+    <div v-show="withTime" class="w-full h-40px border-t flex justify-end items-center px-14px cursor-pointer transition text-[#0c58d2] hover:opacity-80">
+      <span @click="useEimtSelect">确定</span>
+    </div>
   </div>
 </template>
 
@@ -578,6 +583,7 @@ const handleMinuteWhell = (e) => {
   }
 
   font-size: 14px;
+  box-sizing: border-box;
 
   .disable {
     cursor: not-allowed;
@@ -588,7 +594,7 @@ const handleMinuteWhell = (e) => {
     @apply flex justify-between items-center;
 
     .day {
-      @apply w-24px h-24px rounded flex justify-center cursor-pointer flex-none leading-24px;
+      @apply w-24px h-24px rounded flex justify-center cursor-pointer flex-none leading-24px transition;
 
       &:hover {
         background-color: #EEF1F5;
