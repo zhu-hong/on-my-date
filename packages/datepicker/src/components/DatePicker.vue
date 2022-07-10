@@ -397,20 +397,29 @@ const useEimtSelect = () => {
 const handleHourWhell = (e) => {
   const inc = e.deltaY > 0 ? 1 : -1
 
-  const { year: curtYear, month: curtMonth, date: curtDate, dateStr, hour, minute } = curDateInfo.value
+  const { year: curtYear, month: curtMonth, date: curtDate, dateStr, hour, minute: curtMinute } = curDateInfo.value
 
   const incedHour = hour + inc
+  let incedMinute = curtMinute
 
   if(incedHour > 23 || incedHour < 0) return
 
-  const { year: minYear, month: minMonth, date: minDate, hour: minHour } = minTimeInfo.value
-  const { year: maxYear, month: maxMonth, date: maxDate, hour: maxHour } = maxTimeInfo.value
+  const { year: minYear, month: minMonth, date: minDate, hour: minHour, minute: minMinute } = minTimeInfo.value
+  const { year: maxYear, month: maxMonth, date: maxDate, hour: maxHour, minute: maxMinute } = maxTimeInfo.value
 
   if(curtYear === minYear && curtMonth === minMonth && curtDate === minDate && incedHour < minHour) return
 
   if(curtYear === maxYear && curtMonth === maxMonth && curtDate === maxDate && incedHour > maxHour) return
 
-  curDate.value = new Date(`${dateStr} ${incedHour}:${minute}`)
+  if(curtYear === minYear && curtMonth === minMonth && curtDate === minDate && incedHour === minHour && curtMinute < minMinute) {
+    incedMinute = minMinute
+  }
+
+  if(curtYear === maxYear && curtMonth === maxMonth && curtDate === maxDate && incedHour === maxHour && curtMinute > maxMinute) {
+    incedMinute = maxMinute
+  }
+
+  curDate.value = new Date(`${dateStr} ${incedHour}:${incedMinute}`)
 }
 
 /**
