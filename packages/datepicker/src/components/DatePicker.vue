@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
-import { useDateMatrix, useDateDetail } from '@zhu-hong/datematrix'
+import { useDateMatrix, useDateDetail } from '@zhu-hong/usedate'
 import { Popover } from 'element-ui'
 
 const todayDate = new Date()
