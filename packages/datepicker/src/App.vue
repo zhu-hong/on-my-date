@@ -1,5 +1,4 @@
 <script setup>
-import { TimeTiny } from '@zhu-hong/datematrix';
 import { ref } from 'vue';
 import { DatePicker } from './components/index'
 
@@ -11,13 +10,15 @@ const shortcut = [
 
 const withTime = ref(true)
 
-const time = ref(new Date().getTime())
+const time1 = ref(new Date().getTime())
 
 const time2 = ref(new Date().getTime())
 
-setInterval(() => {
-  time.value = time.value + TimeTiny.Day
-}, 500)
+const handleSelectTime1 = (time) => {
+  if(time > time2.value) {
+    time2.value = time
+  }
+}
 </script>
 
 <template>
@@ -27,11 +28,12 @@ setInterval(() => {
       <el-switch v-model="withTime">withTime</el-switch>
     </div>
     <date-picker
-      :time.sync="time"
+      :time.sync="time1"
       :max-time="'2030-7-1 8:30'"
       :min-time="'2018-8-8 8:30'"
       :shortcut="shortcut"
       :with-time="withTime"
+      @select="handleSelectTime1"
     >
       <template v-slot:default="SlotProps">
         <pre>{{ SlotProps.about }}</pre>
@@ -39,7 +41,7 @@ setInterval(() => {
     </date-picker>
     <date-picker
       :time.sync="time2"
-      :min-time="time"
+      :min-time="time1"
       :with-time="withTime"
     >
       <template v-slot:default="SlotProps">
