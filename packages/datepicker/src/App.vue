@@ -1,9 +1,11 @@
 <script setup>
+import { TimeTiny } from '@zhu-hong/usedate';
 import { ref } from 'vue';
 import { DatePicker } from './components/index'
 
 const shortcut = [
   { desc: '今天', time: new Date().getTime() },
+  { desc: '不选', time: null },
   { desc: '2007-7-7', time: new Date('2007-7-7').getTime() },
   { desc: '2018-8-8', time: new Date('2018-8-8 8:30').getTime() },
 ]
@@ -16,7 +18,7 @@ const time2 = ref(new Date().getTime())
 
 const handleSelectTime1 = (time) => {
   if(time > time2.value) {
-    time2.value = time
+    time2.value = time + TimeTiny.Hour
   }
 }
 </script>

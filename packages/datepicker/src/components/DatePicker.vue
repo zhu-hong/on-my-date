@@ -47,6 +47,10 @@ const shortcutOptions = computed(() => {
       disable = true
     }
 
+    if(s.time === null) {
+      disable = false
+    }
+
     return {
       ...s,
       disable,
@@ -54,7 +58,7 @@ const shortcutOptions = computed(() => {
   })
 })
 
-const emits = defineEmits(['select'])
+const emits = defineEmits(['select', 'update:time'])
 
 const minTimeInfo = computed(() => {
   return useDateDetail(props.minTime)
@@ -63,9 +67,9 @@ const maxTimeInfo = computed(() => {
   return useDateDetail(props.maxTime)
 })
 
-let curDate = ref(new Date(props.time))
-let viewYear = ref(curDateInfo.value.year)
-let viewMonth = ref(curDateInfo.value.month)
+let curDate = ref(props.time === null ? null : new Date(props.time))
+let viewYear = ref(curDateInfo.value === null ? todayDate.getFullYear() : curDateInfo.value.year)
+let viewMonth = ref(curDateInfo.value === null ? todayDate.getMonth() + 1 : curDateInfo.value.month)
 let visible = ref(false)
 
 let mode = ref('date')
@@ -128,19 +132,21 @@ const hourSet = computed(() => {
   return Array.from({ length: 24 }, (_, hour) => {
     let disable = false
 
-    const { timestamp: minTime } = minTimeInfo.value
-    const { timestamp: maxTime } = maxTimeInfo.value
-    const curDate = new Date(curDateInfo.value.dateStr)
-
-    const incedMinHourTime = curDate.setHours(hour, 59)
-    const incedMaxHourTime = curDate.setHours(hour, 0)
-
-    if(incedMinHourTime < minTime) {
-      disable = true
-    }
-
-    if(incedMaxHourTime > maxTime) {
-      disable = true
+    if(curDateInfo.value !== null) {
+      const curDate = new Date(curDateInfo.value.dateStr)
+      const { timestamp: minTime } = minTimeInfo.value
+      const { timestamp: maxTime } = maxTimeInfo.value
+  
+      const incedMinHourTime = curDate.setHours(hour, 59)
+      const incedMaxHourTime = curDate.setHours(hour, 0)
+  
+      if(incedMinHourTime < minTime) {
+        disable = true
+      }
+  
+      if(incedMaxHourTime > maxTime) {
+        disable = true
+      }
     }
 
     return {
@@ -160,14 +166,16 @@ const minuteSet = computed(() => {
   return Array.from({ length: 60 }, (_, minute) => {
     let disable = false
 
-    const { timestamp: minTime } = minTimeInfo.value
-    const { timestamp: maxTime } = maxTimeInfo.value
-    const { dateStr, hour } = curDateInfo.value
-
-    const incedMinute = new Date(`${dateStr} ${hour}:${minute}`)
-
-    if(incedMinute < minTime || incedMinute > maxTime) {
-      disable = true
+    if(curDateInfo.value !== null) {
+      const { dateStr, hour } = curDateInfo.value
+      const { timestamp: minTime } = minTimeInfo.value
+      const { timestamp: maxTime } = maxTimeInfo.value
+  
+      const incedMinute = new Date(`${dateStr} ${hour}:${minute}`)
+  
+      if(incedMinute < minTime || incedMinute > maxTime) {
+        disable = true
+      }
     }
 
     return {
@@ -230,41 +238,46 @@ const useSelectDate = (day) => {
   if(!props.withTime) {
     curDate.value = new Date(day.dateStr)
   } else {
-    const { hour: curtHour, minute: curtMinute } = curDateInfo.value
-    const { year: minYear, month: minMonth, date: minDate, hour: minHour, minute: minMinute } = minTimeInfo.value
-    const { year: maxYear, month: maxMonth, date: maxDate, hour: maxHour, minute: maxMinute } = maxTimeInfo.value
-
-    const newDate = new Date(`${day.dateStr} ${curtHour}:${curtMinute}`)
-    const { year: curtYear, month: curtMonth, date: curtDate } = useDateDetail(newDate.getTime())
-
-    let incedHour = curtHour
-    let incedMinute = curtMinute
-
-    if(curtYear === minYear && curtMonth === minMonth && curtDate === minDate && curtHour < minHour) {
-      incedHour = minHour
-
-      if(incedMinute < minMinute) {
-        incedMinute === minMinute
+    if(curDateInfo.value !== null) {
+      const { hour: curtHour, minute: curtMinute } = curDateInfo.value
+      const { year: minYear, month: minMonth, date: minDate, hour: minHour, minute: minMinute } = minTimeInfo.value
+      const { year: maxYear, month: maxMonth, date: maxDate, hour: maxHour, minute: maxMinute } = maxTimeInfo.value
+  
+      const newDate = new Date(`${day.dateStr} ${curtHour}:${curtMinute}`)
+      const { year: curtYear, month: curtMonth, date: curtDate } = useDateDetail(newDate.getTime())
+  
+      let incedHour = curtHour
+      let incedMinute = curtMinute
+  
+      if(curtYear === minYear && curtMonth === minMonth && curtDate === minDate && curtHour < minHour) {
+        incedHour = minHour
+  
+        if(incedMinute < minMinute) {
+          incedMinute === minMinute
+        }
       }
-    }
-
-    if(curtYear === minYear && curtMonth === minMonth && curtDate === minDate && incedHour === minHour && curtMinute < minMinute) {
-      incedMinute = minMinute
-    }
-
-    if(curtYear === maxYear && curtMonth === maxMonth && curtDate === maxDate && curtHour > maxHour) {
-      incedHour = maxHour
-
-      if(incedMinute > maxMinute) {
-        incedMinute === maxMinute
+  
+      if(curtYear === minYear && curtMonth === minMonth && curtDate === minDate && incedHour === minHour && curtMinute < minMinute) {
+        incedMinute = minMinute
       }
+  
+      if(curtYear === maxYear && curtMonth === maxMonth && curtDate === maxDate && curtHour > maxHour) {
+        incedHour = maxHour
+  
+        if(incedMinute > maxMinute) {
+          incedMinute === maxMinute
+        }
+      }
+  
+      if(curtYear === maxYear && curtMonth === maxMonth && curtDate === maxDate && incedHour === maxHour && curtMinute > maxMinute) {
+        incedMinute = maxMinute
+      }
+
+      curDate.value = new Date(`${day.dateStr} ${incedHour}:${incedMinute}`)
+    } else {
+      curDate.value = new Date(day.dateStr)
     }
 
-    if(curtYear === maxYear && curtMonth === maxMonth && curtDate === maxDate && incedHour === maxHour && curtMinute > maxMinute) {
-      incedMinute = maxMinute
-    }
-
-    curDate.value = new Date(`${day.dateStr} ${incedHour}:${incedMinute}`)
   }
 
   if(props.withTime) return
@@ -381,11 +394,14 @@ const selectViewYear = (year) => {
 const useSelectShortcut = (shortcut) => {
   if(shortcut.disable) return
 
-  const { year, month, timestamp } = useDateDetail(shortcut.time)
-  viewYear.value = year
-  viewMonth.value = month
-
-  curDate.value = new Date(timestamp)
+  if(shortcut.time === null) {
+    curDate.value = null
+  } else {
+    const { year, month, timestamp } = useDateDetail(shortcut.time)
+    viewYear.value = year
+    viewMonth.value = month
+    curDate.value = new Date(timestamp)
+  }
 
   useEimtUpdate()
 }
@@ -393,10 +409,18 @@ const useSelectShortcut = (shortcut) => {
 const useEimtUpdate = () => {
   visible.value = false
 
-  const time = curDate.value.getTime()
+  if(curDate.value !== null) {
+    const time = curDate.value.getTime()
+    emits('update:time', time)
+    emits('select', time)
+  } else {
+    emits('update:time', null)
+    emits('select', null)
 
-  emits('update:time', time)
-  emits('select', time)
+    viewYear.value = todayDate.getFullYear()
+    viewMonth.value = todayDate.getMonth() + 1
+  }
+
 }
 
 /**
@@ -405,31 +429,34 @@ const useEimtUpdate = () => {
  */
 const handleHourWhell = (e) => {
   if(e.ctrlKey || e.metaKey) return
-  const inc = e.deltaY > 0 ? 1 : -1
 
-  const { year: curtYear, month: curtMonth, date: curtDate, dateStr, hour, minute: curtMinute } = curDateInfo.value
+  if(curDateInfo.value !== null) {
+    const inc = e.deltaY > 0 ? 1 : -1
 
-  const incedHour = hour + inc
-  let incedMinute = curtMinute
+    const { year: curtYear, month: curtMonth, date: curtDate, dateStr, hour, minute: curtMinute } = curDateInfo.value
+  
+    const incedHour = hour + inc
+    let incedMinute = curtMinute
+  
+    if(incedHour > 23 || incedHour < 0) return
+  
+    const { disable } = hourSet.value.find((h) => h.hour === incedHour)
+  
+    if(disable) return
+  
+    const { year: minYear, month: minMonth, date: minDate, hour: minHour, minute: minMinute } = minTimeInfo.value
+    const { year: maxYear, month: maxMonth, date: maxDate, hour: maxHour, minute: maxMinute } = maxTimeInfo.value
+  
+    if(curtYear === minYear && curtMonth === minMonth && curtDate === minDate && incedHour === minHour && curtMinute < minMinute) {
+      incedMinute = minMinute
+    }
+  
+    if(curtYear === maxYear && curtMonth === maxMonth && curtDate === maxDate && incedHour === maxHour && curtMinute > maxMinute) {
+      incedMinute = maxMinute
+    }
 
-  if(incedHour > 23 || incedHour < 0) return
-
-  const { disable } = hourSet.value.find((h) => h.hour === incedHour)
-
-  if(disable) return
-
-  const { year: minYear, month: minMonth, date: minDate, hour: minHour, minute: minMinute } = minTimeInfo.value
-  const { year: maxYear, month: maxMonth, date: maxDate, hour: maxHour, minute: maxMinute } = maxTimeInfo.value
-
-  if(curtYear === minYear && curtMonth === minMonth && curtDate === minDate && incedHour === minHour && curtMinute < minMinute) {
-    incedMinute = minMinute
+    curDate.value = new Date(`${dateStr} ${incedHour}:${incedMinute}`)
   }
-
-  if(curtYear === maxYear && curtMonth === maxMonth && curtDate === maxDate && incedHour === maxHour && curtMinute > maxMinute) {
-    incedMinute = maxMinute
-  }
-
-  curDate.value = new Date(`${dateStr} ${incedHour}:${incedMinute}`)
 }
 
 /**
@@ -437,31 +464,39 @@ const handleHourWhell = (e) => {
  * @param { WheelEvent } e 
  */
 const handleMinuteWhell = (e) => {
-  if(e.ctrlKey || e.metaKey) return
-  const inc = e.deltaY > 0 ? 1 : -1
-
-  const { dateStr, hour: curtHour,  minute } = curDateInfo.value
-
-  const incedMinute = minute + inc
-
-  if(incedMinute > 59 || incedMinute < 0) return
+  if(curDateInfo.value !== null) {
+    if(e.ctrlKey || e.metaKey) return
+    const inc = e.deltaY > 0 ? 1 : -1
   
-  const { disable } = minuteSet.value.find((m) => m.minute === incedMinute)
-
-  if(disable) return
-
-  curDate.value = new Date(`${dateStr} ${curtHour}:${incedMinute}`)
+    const { dateStr, hour: curtHour,  minute } = curDateInfo.value
+  
+    const incedMinute = minute + inc
+  
+    if(incedMinute > 59 || incedMinute < 0) return
+    
+    const { disable } = minuteSet.value.find((m) => m.minute === incedMinute)
+  
+    if(disable) return
+  
+    curDate.value = new Date(`${dateStr} ${curtHour}:${incedMinute}`)
+  }
 }
 
 watch(
   () => props.time,
   (time) => {
-    const { year, month } = useDateDetail(time)
-    curDate.value = new Date(time)
-
-    mode.value = 'date'
-    viewYear.value = year
-    viewMonth.value = month
+    if(time !== null) {
+      const { year, month } = useDateDetail(time)
+      curDate.value = new Date(time)
+  
+      mode.value = 'date'
+      viewYear.value = year
+      viewMonth.value = month
+    } else {
+      mode.value = 'date'
+      viewYear.value = todayDate.getFullYear()
+      viewMonth.value = todayDate.getMonth() + 1
+    }
   }
 )
 </script>
@@ -529,7 +564,7 @@ watch(
                   $style.day,
                   d.dateStr === todayDateStr && $style.today,
                   d.inOtherMonth && $style['other-month'],
-                  d.dateStr === curDateInfo.dateStr && $style.curdate,
+                   curDateInfo !== null && d.dateStr === curDateInfo.dateStr && $style.curdate,
                   d.disable && $style.disable,
                 ]"
                 @click="useSelectDate(d)"
@@ -565,7 +600,7 @@ watch(
             </span>
           </div>
         </div>
-        <div v-show="withTime" class="w-112px h-full border-l flex flex-col">
+        <div v-if="withTime && curDateInfo !== null" class="w-112px h-full border-l flex flex-col">
           <div class="h-40px border-b flex items-center px-12px">
             {{ `${curDateInfo.hour.toString().padStart(2, '0')}:${curDateInfo.minute.toString().padStart(2, '0')}` }}
           </div>
