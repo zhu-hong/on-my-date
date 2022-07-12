@@ -1,6 +1,8 @@
 import type { IDateDetail } from './types'
 
-export function useDateDetail(time: number | string): IDateDetail {
+export function useDateDetail(time: number | string | null): IDateDetail | null {
+  if(time === null) return null
+
   const d = new Date(time)
 
   const year = d.getFullYear()
