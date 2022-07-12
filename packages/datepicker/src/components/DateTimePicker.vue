@@ -398,7 +398,7 @@ export default {
 
 <template>
   <popover :visible-arrow="false" popper-class="z-datepicker-popover" v-model="visible">
-    <template slot="reference">
+    <template #reference>
       <slot v-bind:about="timeDetail"></slot>
     </template>
     <div :class="['flex flex-col justify-between items-center rounded bg-white text-14px', withTime ? 'h-320px' : 'h-280px']">
@@ -500,14 +500,14 @@ export default {
             {{ `${curDateInfo.hour.toString().padStart(2, '0')}:${curDateInfo.minute.toString().padStart(2, '0')}` }}
           </div>
           <div class="flex-1 flex">
-            <div @wheel="handleHourWhell" class="flex-1 h-full overflow-hidden flex justify-center items-center border-r border-[#DFE3E9]">
+            <div @wheel="handleHourWhell" class="flex-1 h-full overflow-hidden flex flex-col justify-start items-center border-r border-[#DFE3E9]">
               <div class="w-full h-32px overflow-visible bg-[#E6EEFA]">
                 <div class="w-full h-full flex flex-col transition" :style="{ transform: `translateY(-${curDateInfo.hour*32}px)` }">
                   <span v-for="h of hourSet" :class="['h-full flex-none text-center leading-33px', { 'opacity-50': h.disable }]">{{ h.hour.toString().padStart(2, 0) }}</span>
                 </div>
               </div>
             </div>
-            <div @wheel="handleMinuteWhell" class="flex-1 h-full overflow-hidden flex justify-center items-center">
+            <div @wheel="handleMinuteWhell" class="flex-1 h-full overflow-hidden flex flex-col justify-start items-center">
               <div class="w-full h-32px overflow-visible bg-[#E6EEFA]">
                 <div class="w-full h-full flex flex-col transition" :style="{ transform: `translateY(-${curDateInfo.minute*32}px)` }">
                   <span v-for="m of minuteSet" :class="['h-full flex-none text-center leading-33px', { 'opacity-50': m.disable }]">{{ m.minute.toString().padStart(2, 0) }}</span>
@@ -527,6 +527,7 @@ export default {
 <style lang="postcss">
 .z-datepicker-popover {
   padding: 0 !important;
+  min-width: 0 !important;
 
   *, *::before, *::after {
     box-sizing: border-box;
