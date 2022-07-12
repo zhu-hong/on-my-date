@@ -1,11 +1,14 @@
 {
   "name": "@zhu-hong/datepicker",
-  "version": "1.2.0",
-  "main": "dist/datepicker.es.js",
-  "description": "vue date_picker",
+  "version": "1.3.0",
+  "main": "dist/index.es.js",
+  "module": "dist/index.es.js",
+  "types": "index.d.ts",
+  "description": "vue date picker",
   "sideEffects": false,
   "files": [
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "scripts": {
     "dev": "vite",
@@ -13,15 +16,14 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@zhu-hong/usedate": "workspace:*",
-    "vue": "2.7.4"
+    "@zhu-hong/usedate": "workspace:*"
   },
   "devDependencies": {
-    "@unocss/transformer-directives": "0.44.0",
     "@vitejs/plugin-vue2": "1.1.2",
     "element-ui": "2.15.9",
     "postcss-nested": "5.0.6",
-    "unocss": "0.44.0"
+    "unocss": "0.44.0",
+    "vue": "2.7.4"
   },
   "license": "MIT",
   "author": "zhu-hong",

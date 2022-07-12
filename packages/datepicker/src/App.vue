@@ -1,7 +1,7 @@
 <script setup>
 import { TimeTiny } from '@zhu-hong/usedate';
 import { ref } from 'vue';
-import { DatePicker } from './components/index'
+import { DateTimePicker } from './components/index'
 
 const shortcut = [
   { desc: '今天', time: new Date().getTime() },
@@ -29,7 +29,7 @@ const handleSelectTime1 = (time) => {
       <span>withTime</span>
       <el-switch v-model="withTime">withTime</el-switch>
     </div>
-    <date-picker
+    <date-time-picker
       :time.sync="time1"
       :max-time="'2030-7-1 8:30'"
       :min-time="'2018-8-8 8:30'"
@@ -40,8 +40,8 @@ const handleSelectTime1 = (time) => {
       <template v-slot:default="SlotProps">
         <pre>{{ SlotProps }}</pre>
       </template>
-    </date-picker>
-    <date-picker
+    </date-time-picker>
+    <date-time-picker
       :time.sync="time2"
       :min-time="time1 ?? new Date('2000-11-22')"
       :with-time="withTime"
@@ -49,6 +49,6 @@ const handleSelectTime1 = (time) => {
       <template v-slot:default="SlotProps">
         <pre>{{ SlotProps.about }}</pre>
       </template>
-    </date-picker>
+    </date-time-picker>
   </div>
 </template>
