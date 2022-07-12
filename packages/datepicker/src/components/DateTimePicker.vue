@@ -403,7 +403,7 @@ export default {
     </template>
     <div :class="['flex flex-col justify-between items-center rounded bg-white text-14px', withTime ? 'h-320px' : 'h-280px']">
       <div class="flex justify-between items-center">
-        <div v-show="shortcutOptions.length > 0" class="w-100px h-full border-r flex flex-col gap-14px overflow-auto items-center p-14px">
+        <div v-show="shortcutOptions.length > 0" class="w-100px h-full border-r border-[#DFE3E9] flex flex-col gap-14px overflow-auto items-center p-14px">
           <span
             v-for="s of shortcutOptions"
             :class="[
@@ -495,12 +495,12 @@ export default {
             </span>
           </div>
         </div>
-        <div v-if="withTime && curDateInfo !== null" class="w-112px h-full border-l flex flex-col">
-          <div class="h-40px border-b flex items-center px-12px">
+        <div v-if="withTime && curDateInfo !== null" class="w-112px h-full border-l border-[#DFE3E9] flex flex-col">
+          <div class="h-40px border-b border-[#DFE3E9] flex items-center px-12px">
             {{ `${curDateInfo.hour.toString().padStart(2, '0')}:${curDateInfo.minute.toString().padStart(2, '0')}` }}
           </div>
           <div class="flex-1 flex">
-            <div @wheel="handleHourWhell" class="flex-1 h-full overflow-hidden flex justify-center items-center border-r">
+            <div @wheel="handleHourWhell" class="flex-1 h-full overflow-hidden flex justify-center items-center border-r border-[#DFE3E9]">
               <div class="w-full h-32px overflow-visible bg-[#E6EEFA]">
                 <div class="w-full h-full flex flex-col transition" :style="{ transform: `translateY(-${curDateInfo.hour*32}px)` }">
                   <span v-for="h of hourSet" :class="['h-full flex-none text-center leading-33px', { 'opacity-50': h.disable }]">{{ h.hour.toString().padStart(2, 0) }}</span>
@@ -517,7 +517,7 @@ export default {
           </div>
         </div>
       </div>
-      <div v-show="withTime" class="w-full h-40px border-t flex justify-end items-center px-14px cursor-pointer transition text-[#0c58d2] hover:opacity-80">
+      <div v-show="withTime" class="w-full h-40px border-t border-[#DFE3E9] flex justify-end items-center px-14px cursor-pointer transition text-[#0c58d2] hover:opacity-80">
         <span @click="useEimtUpdate">确定</span>
       </div>
     </div>
@@ -530,9 +530,6 @@ export default {
 
   *, *::before, *::after {
     box-sizing: border-box;
-    border-width: 0;
-    border-style: solid;
-    border-color: #DFE3E9;
     user-select: none;
   }
 
