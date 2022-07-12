@@ -30,7 +30,6 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/components/index'),
       formats: ['es'],
-      fileName: 'index.js',
     },
 
     rollupOptions: {
