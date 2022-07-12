@@ -1,6 +1,6 @@
 {
   "name": "@zhu-hong/datepicker",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "main": "dist/datepicker.es.js",
   "description": "vue date_picker",
   "sideEffects": false,

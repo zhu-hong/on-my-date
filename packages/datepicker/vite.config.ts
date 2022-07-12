@@ -33,7 +33,7 @@ export default defineConfig({
     },
 
     rollupOptions: {
-      external: ['@zhu-hong/usedate', 'vue', 'element-ui'],
+      external: ['@zhu-hong/usedate', 'element-ui'],
     },
   },
 })
