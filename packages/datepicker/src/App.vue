@@ -1,7 +1,7 @@
 <script setup>
 import { TimeTiny } from '@zhu-hong/usedate';
 import { ref } from 'vue';
-import { DateTimePicker } from './components/index'
+import { DateTimePicker, TimePicker } from './components/index'
 
 const shortcut = [
   { desc: '今天', time: new Date().getTime() },
@@ -50,5 +50,11 @@ const handleSelectTime1 = (time) => {
         <pre>{{ SlotProps.about }}</pre>
       </template>
     </date-time-picker>
+
+    <time-picker>
+      <template v-slot:default>
+        <span>!!!!!!!!!!!!!!!!</span>
+      </template>
+    </time-picker>
   </div>
 </template>
