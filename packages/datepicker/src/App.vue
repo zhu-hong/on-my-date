@@ -38,12 +38,12 @@ const handleSelectTime1 = (time) => {
       @select="handleSelectTime1"
     >
       <template v-slot:default="SlotProps">
-        <pre>{{ SlotProps.about }}</pre>
+        <pre>{{ SlotProps }}</pre>
       </template>
     </date-picker>
     <date-picker
       :time.sync="time2"
-      :min-time="time1"
+      :min-time="time1 ?? new Date('2000-11-22')"
       :with-time="withTime"
     >
       <template v-slot:default="SlotProps">
