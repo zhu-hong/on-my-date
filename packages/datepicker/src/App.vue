@@ -12,7 +12,7 @@ const shortcut = [
 
 const withTime = ref(true)
 
-const time1 = ref(new Date().getTime())
+const time1 = ref(new Date('2025-8-8').getTime())
 
 const time2 = ref(new Date().getTime())
 

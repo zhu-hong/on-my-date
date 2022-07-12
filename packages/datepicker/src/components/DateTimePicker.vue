@@ -29,10 +29,15 @@ export default {
     Popover,
   },
   data() {
+    const curDateInfo = useDateDetail(this.time)
+
     return {
       curDate: this.time === null ? null : new Date(this.time),
-      viewYear: this.curDateInfo == null ? todayDate.getFullYear() : this.curDateInfo.year,
-      viewMonth: this.curDateInfo == null ? todayDate.getMonth() + 1 : this.curDateInfo.month,
+      /**
+       * 到这时还无法访问 computed
+      */
+      viewYear: this.time === null ? todayDate.getFullYear() : curDateInfo.year,
+      viewMonth: this.time === null ? todayDate.getMonth() + 1 : curDateInfo.month,
       visible: false,
       mode: 'date',
       viewYearInc: 0,
