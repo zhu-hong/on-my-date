@@ -63,6 +63,11 @@ export default {
       this.$emit('update:hour', this.curtHour)
       this.$emit('update:minute', this.curtMinute)
 
+      this.$emit('select', {
+        hour: this.curtHour,
+        minute: this.curtMinute,
+      })
+
       this.visible = false
     },
     useNow() {
