@@ -24,6 +24,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    placement: {
+      type: String,
+      default: 'bottom-end',
+    },
   },
   components: {
     Popover,
@@ -402,7 +406,7 @@ export default {
 </script>
 
 <template>
-  <popover :visible-arrow="false" popper-class="z-datepicker-popover" v-model="visible">
+  <popover :placement="placement" :visible-arrow="false" popper-class="z-datepicker-popover" v-model="visible">
     <template #reference>
       <slot v-bind:about="timeDetail"></slot>
     </template>
@@ -461,10 +465,10 @@ export default {
               <span
                 v-for="d of w"
                 :class="[
-                  'day w-24px h-24px rounded flex justify-center cursor-pointer flex-none leading-24px transition',
+                  'day w-24px h-24px rounded flex justify-center items-center cursor-pointer flex-none transition',
                   { 'border border-[#0c58d2] text-[#0c58d2]': d.dateStr === todayDateStr },
                   { 'opacity-50': d.inOtherMonth },
-                  { 'bg-[#0c58d2] text-white': curDateInfo !== null && d.dateStr === curDateInfo.dateStr },
+                  { 'curday': curDateInfo !== null && d.dateStr === curDateInfo.dateStr },
                   { 'disable': d.disable },
                 ]"
                 @click="useSelectDate(d)"
@@ -529,7 +533,7 @@ export default {
   </popover>
 </template>
 
-<style lang="postcss">
+<style lang="scss">
 .z-datepicker-popover {
   padding: 0 !important;
   min-width: 0 !important;
@@ -540,7 +544,12 @@ export default {
   }
 
   .day {
-    &:hover {
+    &.curday {
+      background-color: #0c58d2;
+      color: #ffffff;
+    }
+
+    &:not(.curday):hover {
       background-color: #eef1f5;
     }
   }

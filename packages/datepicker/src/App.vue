@@ -1,25 +1,34 @@
-<script setup>
-import { TimeTiny } from '@zhu-hong/usedate';
-import { ref } from 'vue';
+<script>
+import { TimeTiny } from '@zhu-hong/usedate'
 import { DateTimePicker, TimePicker } from './components/index'
 
-const shortcut = [
-  { desc: '今天', time: new Date().getTime() },
-  { desc: '不选', time: null },
-  { desc: '2007-7-7', time: new Date('2007-7-7').getTime() },
-  { desc: '2018-8-8', time: new Date('2018-8-8 8:30').getTime() },
-]
-
-const withTime = ref(true)
-
-const time1 = ref(new Date('2025-8-8').getTime())
-
-const time2 = ref(new Date().getTime())
-
-const handleSelectTime1 = (time) => {
-  if(time > time2.value) {
-    time2.value = time + TimeTiny.Hour
-  }
+export default {
+  components: {
+    DateTimePicker,
+    TimePicker,
+  },
+  data() {
+    return {
+      shortcut: [
+        { desc: '今天', time: new Date().getTime() },
+        { desc: '不选', time: null },
+        { desc: '2007-7-7', time: new Date('2007-7-7').getTime() },
+        { desc: '2018-8-8', time: new Date('2018-8-8 8:30').getTime() },
+      ],
+      withTime: false,
+      time1: new Date().getTime(),
+      time2: new Date().getTime(),
+      hour: 12,
+      minute: 12,
+    }
+  },
+  methods: {
+    handleSelectTime1(time) {
+      if(time > this.time2) {
+        this.time2 = time + TimeTiny.Hour
+      }
+    }
+  },
 }
 </script>
 
@@ -41,6 +50,17 @@ const handleSelectTime1 = (time) => {
         <pre>{{ SlotProps }}</pre>
       </template>
     </date-time-picker>
+
+    <div>
+      <span>{{ hour }}</span>:<span>{{ minute }}</span>
+    </div>
+    
+    <time-picker :hour.sync="hour" :minute.sync="minute">
+      <template v-slot:default>
+        <span>!!!!!!!!!!!!!!!!</span>
+      </template>
+    </time-picker>
+    
     <date-time-picker
       :time.sync="time2"
       :min-time="time1 ?? new Date('2000-11-22')"
@@ -50,11 +70,5 @@ const handleSelectTime1 = (time) => {
         <pre>{{ SlotProps.about }}</pre>
       </template>
     </date-time-picker>
-
-    <time-picker>
-      <template v-slot:default>
-        <span>!!!!!!!!!!!!!!!!</span>
-      </template>
-    </time-picker>
   </div>
 </template>

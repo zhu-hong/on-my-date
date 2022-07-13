@@ -11,6 +11,14 @@ export default {
       type: Number,
       default: 0,
     },
+    width: {
+      type: Number,
+      default: 112,
+    },
+    placement: {
+      type: String,
+      default: 'bottom-end',
+    },
   },
   data() {
     return {
@@ -77,11 +85,11 @@ export default {
 </script>
 
 <template>
-  <popover :visible-arrow="false" popper-class="z-datepicker-popover" v-model="visible">
+  <popover :visible-arrow="false" popper-class="z-datepicker-popover" v-model="visible" :placement="placement">
     <template #reference>
       <slot></slot>
     </template>
-    <div class="w-112px h-304px flex flex-col justify-between">
+    <div :style="{ width: `${width}px` }" class="h-304px flex flex-col justify-between">
       <div class="flex-none h-40px border-b border-[#DFE3E9] flex items-center px-12px">
         {{ `${curtHour.toString().padStart(2, 0)}:${curtMinute.toString().padStart(2, 0)}` }}
       </div>
