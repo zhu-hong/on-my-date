@@ -1,6 +1,6 @@
 {
   "name": "@zhu-hong/datepicker",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "main": "dist/index.es.js",
   "module": "dist/index.es.js",
   "types": "index.d.ts",

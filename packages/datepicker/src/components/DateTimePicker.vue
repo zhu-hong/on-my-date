@@ -220,12 +220,12 @@ export default {
             incedHour = maxHour
       
             if(incedMinute > maxMinute) {
-              incedMinute = maxMinute - 1
+              incedMinute = maxMinute
             }
           }
       
           if(curtYear === maxYear && curtMonth === maxMonth && curtDate === maxDate && incedHour === maxHour && curtMinute > maxMinute) {
-            incedMinute = maxMinute - 1
+            incedMinute = maxMinute
           }
 
           this.curDate = new Date(`${day.dateStr} ${incedHour}:${incedMinute}`)
@@ -372,7 +372,7 @@ export default {
         }
       
         if(curtYear === maxYear && curtMonth === maxMonth && curtDate === maxDate && incedHour === maxHour && curtMinute > maxMinute) {
-          incedMinute = maxMinute - 1
+          incedMinute = maxMinute
         }
 
         this.curDate = new Date(`${dateStr} ${incedHour}:${incedMinute}`)
