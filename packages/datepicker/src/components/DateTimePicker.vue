@@ -163,7 +163,7 @@ export default {
     dateMartix() {
       return useDateMatrix(this.viewYear, this.viewMonth).map((week) => {
         week = week.map((day) => {
-          if(new Date(day.timestamp).setHours(23,59,59) < this.minTimeInfo.timestamp || day.timestamp > this.maxTimeInfo.timestamp) {
+          if(new Date(day.timestamp).setHours(23,59) <= this.minTimeInfo.timestamp || day.timestamp >= this.maxTimeInfo.timestamp) {
             day.disable = true
           } else {
             day.disable = false

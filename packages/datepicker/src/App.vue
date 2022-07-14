@@ -41,7 +41,7 @@ export default {
     <date-time-picker
       :time.sync="time1"
       :max-time="'2030-7-1 8:30'"
-      :min-time="new Date().getTime()"
+      :min-time="new Date().setHours(23)"
       :shortcut="shortcut"
       :with-time="withTime"
       @select="handleSelectTime1"
@@ -61,7 +61,7 @@ export default {
       </template>
     </time-picker>
     
-    <!-- <date-time-picker
+    <date-time-picker
       :time.sync="time2"
       :min-time="time1 ?? new Date('2000-11-22')"
       :with-time="withTime"
@@ -69,6 +69,6 @@ export default {
       <template v-slot:default="SlotProps">
         <pre>{{ SlotProps.about }}</pre>
       </template>
-    </date-time-picker> -->
+    </date-time-picker>
   </div>
 </template>
