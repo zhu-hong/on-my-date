@@ -1,5 +1,5 @@
 <script>
-import { useDateMatrix, useDateDetail } from '@zhu-hong/usedate'
+import { useDateMatrix, useDateDetail, TimeTiny } from '@zhu-hong/usedate'
 import { Popover } from 'element-ui'
 
 const todayDate = new Date()
@@ -126,6 +126,8 @@ export default {
           if(incedMaxHourTime > maxTime) {
             disable = true
           }
+        } else {
+          disable = true
         }
 
         return {
@@ -148,6 +150,8 @@ export default {
           if(incedMinute < minTime || incedMinute > maxTime) {
             disable = true
           }
+        } else {
+          disable = true
         }
 
         return {
@@ -204,29 +208,36 @@ export default {
             incedHour = minHour
       
             if(incedMinute < minMinute) {
-              incedMinute === minMinute
+              incedMinute = minMinute + 1
             }
           }
       
           if(curtYear === minYear && curtMonth === minMonth && curtDate === minDate && incedHour === minHour && curtMinute < minMinute) {
-            incedMinute = minMinute
+            incedMinute = minMinute + 1
           }
       
           if(curtYear === maxYear && curtMonth === maxMonth && curtDate === maxDate && curtHour > maxHour) {
             incedHour = maxHour
       
             if(incedMinute > maxMinute) {
-              incedMinute === maxMinute
+              incedMinute = maxMinute - 1
             }
           }
       
           if(curtYear === maxYear && curtMonth === maxMonth && curtDate === maxDate && incedHour === maxHour && curtMinute > maxMinute) {
-            incedMinute = maxMinute
+            incedMinute = maxMinute - 1
           }
 
           this.curDate = new Date(`${day.dateStr} ${incedHour}:${incedMinute}`)
         } else {
-          this.curDate = new Date(day.dateStr)
+          let curDate = new Date(day.dateStr)
+          if(curDate.getTime() < this.minTime) {
+            curDate = new Date(this.minTime + TimeTiny.Minute)
+          } else if(curDate.getTime() > this.maxTime) {
+            curDate = new Date(this.maxTime - TimeTiny.Minute)
+          }
+
+          this.curDate = curDate
         }
 
       }
@@ -357,11 +368,11 @@ export default {
         const { year: maxYear, month: maxMonth, date: maxDate, hour: maxHour, minute: maxMinute } = this.maxTimeInfo
       
         if(curtYear === minYear && curtMonth === minMonth && curtDate === minDate && incedHour === minHour && curtMinute < minMinute) {
-          incedMinute = minMinute
+          incedMinute = minMinute + 1
         }
       
         if(curtYear === maxYear && curtMonth === maxMonth && curtDate === maxDate && incedHour === maxHour && curtMinute > maxMinute) {
-          incedMinute = maxMinute
+          incedMinute = maxMinute - 1
         }
 
         this.curDate = new Date(`${dateStr} ${incedHour}:${incedMinute}`)
@@ -504,21 +515,21 @@ export default {
             </span>
           </div>
         </div>
-        <div v-if="withTime && curDateInfo !== null" class="w-112px h-full border-l border-[#DFE3E9] flex flex-col">
+        <div v-if="withTime" class="w-112px h-full border-l border-[#DFE3E9] flex flex-col">
           <div class="h-40px border-b border-[#DFE3E9] flex items-center px-12px">
-            {{ `${curDateInfo.hour.toString().padStart(2, '0')}:${curDateInfo.minute.toString().padStart(2, '0')}` }}
+            {{ `${curDateInfo === null ? '00' : curDateInfo.hour.toString().padStart(2, '0')}:${curDateInfo === null ? '00' : curDateInfo.minute.toString().padStart(2, '0')}` }}
           </div>
           <div class="flex-1 flex">
             <div @wheel="handleHourWhell" class="flex-1 h-full overflow-hidden flex flex-col justify-start items-center border-r border-[#DFE3E9]">
               <div class="w-full h-32px overflow-visible bg-[#E6EEFA]">
-                <div class="w-full h-full flex flex-col transition" :style="{ transform: `translateY(-${curDateInfo.hour*32}px)` }">
+                <div class="w-full h-full flex flex-col transition" :style="{ transform: `translateY(-${curDateInfo === null ? 0 : curDateInfo.hour * 32}px)` }">
                   <span v-for="h of hourSet" :class="['h-full flex-none text-center leading-33px', { 'opacity-50': h.disable }]">{{ h.hour.toString().padStart(2, 0) }}</span>
                 </div>
               </div>
             </div>
             <div @wheel="handleMinuteWhell" class="flex-1 h-full overflow-hidden flex flex-col justify-start items-center">
               <div class="w-full h-32px overflow-visible bg-[#E6EEFA]">
-                <div class="w-full h-full flex flex-col transition" :style="{ transform: `translateY(-${curDateInfo.minute*32}px)` }">
+                <div class="w-full h-full flex flex-col transition" :style="{ transform: `translateY(-${curDateInfo === null ? 0 : curDateInfo.minute * 32}px)` }">
                   <span v-for="m of minuteSet" :class="['h-full flex-none text-center leading-33px', { 'opacity-50': m.disable }]">{{ m.minute.toString().padStart(2, 0) }}</span>
                 </div>
               </div>
