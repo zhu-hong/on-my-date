@@ -1,6 +1,9 @@
 <script>
 import { Popover } from 'element-ui'
 
+let _HourThrottle = 0
+let _MinuteThrottle = 0
+
 export default {
   props: {
     hour: {
@@ -40,6 +43,10 @@ export default {
     handleHourWheel(e) {
       if(e.ctrlKey || e.metaKey) return
 
+      _HourThrottle += Math.abs(e.deltaY)
+
+      if(_HourThrottle < 250) return
+
       const forward = e.deltaY > 0 ? 1 : -1
 
       const incedHour = this.curtHour + forward
@@ -47,9 +54,14 @@ export default {
       if(incedHour > 23 || incedHour < 0) return
 
       this.curtHour = incedHour
+      _HourThrottle = 0
     },
     handleMinuteWheel(e) {
       if(e.ctrlKey || e.metaKey) return
+
+      _MinuteThrottle += Math.abs(e.deltaY)
+
+      if(_MinuteThrottle < 250) return
 
       const forward = e.deltaY > 0 ? 1 : -1
 
@@ -58,6 +70,7 @@ export default {
       if(incedMinute > 59 || incedMinute < 0) return
 
       this.curtMinute = incedMinute
+      _MinuteThrottle = 0
     },
     useEmit() {
       this.$emit('update:hour', this.curtHour)
@@ -76,6 +89,12 @@ export default {
       this.curtMinute = d.getMinutes()
 
       this.useEmit()
+    },
+    useSelectHour(hour) {
+      this.curtHour = hour
+    },
+    useSelectMinute(minute) {
+      this.curtMinute = minute
     },
   },
   watch: {
@@ -99,17 +118,17 @@ export default {
         {{ `${curtHour.toString().padStart(2, 0)}:${curtMinute.toString().padStart(2, 0)}` }}
       </div>
       <div class="flex-1 flex justify-between items-center overflow-hidden">
-        <div @wheel="handleHourWheel" class="flex-1 h-full flex flex-col justify-start items-center border-r border-[#DFE3E9]">
+        <div @wheel="handleHourWheel" class="flex-1 h-full flex flex-col justify-center items-center border-r border-[#DFE3E9]">
           <div class="w-full h-32px bg-[#E6EEFA]">
             <div class="flex flex-col overflow-visible transition" :style="{ transform: `translateY(-${curtHour * 32}px)` }">
-              <span v-for="h of hours" class="flex-none w-full h-32px flex justify-center items-center">{{ h }}</span>
+              <span @click="useSelectHour(h)" v-for="h of hours" class="flex-none w-full h-32px flex justify-center items-center cursor-pointer">{{ h }}</span>
             </div>
           </div>
         </div>
-        <div @wheel="handleMinuteWheel" class="flex-1 h-full flex flex-col justify-start items-center overflow-hidden">
+        <div @wheel="handleMinuteWheel" class="flex-1 h-full flex flex-col justify-center items-center overflow-hidden">
           <div class="w-full h-32px bg-[#E6EEFA]">
             <div class="flex flex-col overflow-visible transition" :style="{ transform: `translateY(-${curtMinute * 32}px)` }">
-              <span v-for="m of minutes" class="flex-none w-full h-32px flex justify-center items-center">{{ m }}</span>
+              <span @click="useSelectMinute(m)" v-for="m of minutes" class="flex-none w-full h-32px flex justify-center items-center cursor-pointer">{{ m }}</span>
             </div>
           </div>
         </div>

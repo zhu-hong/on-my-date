@@ -40,8 +40,8 @@ export default {
     </div>
     <date-time-picker
       :time.sync="time1"
-      :max-time="'2030-7-1 8:30'"
-      :min-time="new Date().setHours(23)"
+      :max-time="'2022-8-1 8:30'"
+      :min-time="new Date().getTime()"
       :shortcut="shortcut"
       :with-time="withTime"
       @select="handleSelectTime1"

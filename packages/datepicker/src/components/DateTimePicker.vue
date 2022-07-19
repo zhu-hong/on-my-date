@@ -4,6 +4,9 @@ import { Popover } from 'element-ui'
 
 const todayDate = new Date()
 
+let _HourThrottle = 0
+let _MinuteThrottle = 0
+
 export default {
   props: {
     time: {
@@ -195,7 +198,7 @@ export default {
       } else {
         if(this.curDateInfo !== null) {
           const { hour: curtHour, minute: curtMinute } = this.curDateInfo
-          const { year: minYear, month: minMonth, date: minDate, hour: minHour, minute: minMinute } = this.minTimeInfo
+          const { year: minYear, month: minMonth, date: minDate, hour: minHour, minute: minMinute, timestamp } = this.minTimeInfo
           const { year: maxYear, month: maxMonth, date: maxDate, hour: maxHour, minute: maxMinute } = this.maxTimeInfo
       
           const newDate = new Date(`${day.dateStr} ${curtHour}:${curtMinute}`)
@@ -208,12 +211,20 @@ export default {
             incedHour = minHour
       
             if(incedMinute < minMinute) {
-              incedMinute = minMinute + 1
+              if(new Date(timestamp).getSeconds() > 0) {
+                incedMinute = minMinute + 1
+              } else {
+                incedMinute = minMinute
+              }
             }
           }
       
           if(curtYear === minYear && curtMonth === minMonth && curtDate === minDate && incedHour === minHour && curtMinute < minMinute) {
-            incedMinute = minMinute + 1
+            if(new Date(timestamp).getSeconds() > 0) {
+              incedMinute = minMinute + 1
+            } else {
+              incedMinute = minMinute
+            }
           }
       
           if(curtYear === maxYear && curtMonth === maxMonth && curtDate === maxDate && curtHour > maxHour) {
@@ -232,9 +243,15 @@ export default {
         } else {
           let curDate = new Date(day.dateStr)
           if(curDate.getTime() < this.minTime) {
-            curDate = new Date(this.minTime + TimeTiny.Minute)
+            const { dateStr, hour, minute, timestamp } = this.minTimeInfo
+
+            if(new Date(timestamp).getSeconds() > 0) {
+              curDate = new Date(`${dateStr} ${hour}:${minute + 1}`)
+            } else {
+              curDate = new Date(`${dateStr} ${hour}:${minute}`)
+            }
           } else if(curDate.getTime() > this.maxTime) {
-            curDate = new Date(this.maxTime - TimeTiny.Minute)
+            curDate = new Date(this.maxTime)
           }
 
           this.curDate = curDate
@@ -351,6 +368,10 @@ export default {
       if(e.ctrlKey || e.metaKey) return
 
       if(this.curDateInfo !== null) {
+        _HourThrottle += Math.abs(e.deltaY)
+
+        if(_HourThrottle < 250) return
+
         const inc = e.deltaY > 0 ? 1 : -1
 
         const { year: curtYear, month: curtMonth, date: curtDate, dateStr, hour, minute: curtMinute } = this.curDateInfo
@@ -364,11 +385,15 @@ export default {
       
         if(disable) return
       
-        const { year: minYear, month: minMonth, date: minDate, hour: minHour, minute: minMinute } = this.minTimeInfo
+        const { year: minYear, month: minMonth, date: minDate, hour: minHour, minute: minMinute, timestamp } = this.minTimeInfo
         const { year: maxYear, month: maxMonth, date: maxDate, hour: maxHour, minute: maxMinute } = this.maxTimeInfo
       
         if(curtYear === minYear && curtMonth === minMonth && curtDate === minDate && incedHour === minHour && curtMinute < minMinute) {
-          incedMinute = minMinute + 1
+          if(new Date(timestamp).getSeconds() > 0) {
+            incedMinute = minMinute + 1
+          } else {
+            incedMinute = minMinute
+          }
         }
       
         if(curtYear === maxYear && curtMonth === maxMonth && curtDate === maxDate && incedHour === maxHour && curtMinute > maxMinute) {
@@ -376,11 +401,17 @@ export default {
         }
 
         this.curDate = new Date(`${dateStr} ${incedHour}:${incedMinute}`)
+        _HourThrottle = 0
       }
     },
     handleMinuteWhell(e) {
+      if(e.ctrlKey || e.metaKey) return
+
       if(this.curDateInfo !== null) {
-        if(e.ctrlKey || e.metaKey) return
+        _MinuteThrottle += Math.abs(e.deltaY)
+
+        if(_MinuteThrottle < 250) return
+
         const inc = e.deltaY > 0 ? 1 : -1
       
         const { dateStr, hour: curtHour,  minute } = this.curDateInfo
@@ -394,7 +425,38 @@ export default {
         if(disable) return
       
         this.curDate = new Date(`${dateStr} ${curtHour}:${incedMinute}`)
+        _MinuteThrottle = 0
       }
+    },
+    useSelectHour(hour) {
+      if(hour.disable) return
+
+      const { year: minYear, month: minMonth, date: minDate, hour: minHour, minute: minMinute, timestamp } = this.minTimeInfo
+      const { year: maxYear, month: maxMonth, date: maxDate, hour: maxHour, minute: maxMinute } = this.maxTimeInfo
+      const { year: curtYear, month: curtMonth, date: curtDate, dateStr, minute: curtMinute } = this.curDateInfo
+      
+      let incedMinute = curtMinute
+
+      if(curtYear === minYear && curtMonth === minMonth && curtDate === minDate && hour.hour === minHour && curtMinute < minMinute) {
+        if(new Date(timestamp).getSeconds() > 0) {
+          incedMinute = minMinute + 1
+        } else {
+          incedMinute = minMinute
+        }
+      }
+    
+      if(curtYear === maxYear && curtMonth === maxMonth && curtDate === maxDate && hour.hour === maxHour && curtMinute > maxMinute) {
+        incedMinute = maxMinute
+      }
+
+      this.curDate = new Date(`${dateStr} ${hour.hour}:${incedMinute}`)
+    },
+    useSelectMinute(minute) {
+      if(minute.disable) return
+
+      const { dateStr, hour: curtHour } = this.curDateInfo
+
+      this.curDate = new Date(`${dateStr} ${curtHour}:${minute.minute}`)
     },
   },
   watch: {
@@ -520,17 +582,17 @@ export default {
             {{ `${curDateInfo === null ? '00' : curDateInfo.hour.toString().padStart(2, '0')}:${curDateInfo === null ? '00' : curDateInfo.minute.toString().padStart(2, '0')}` }}
           </div>
           <div class="flex-1 flex">
-            <div @wheel="handleHourWhell" class="flex-1 h-full overflow-hidden flex flex-col justify-start items-center border-r border-[#DFE3E9]">
+            <div @wheel="handleHourWhell" class="flex-1 h-full overflow-hidden flex flex-col justify-center items-center border-r border-[#DFE3E9]">
               <div class="w-full h-32px overflow-visible bg-[#E6EEFA]">
                 <div class="w-full h-full flex flex-col transition" :style="{ transform: `translateY(-${curDateInfo === null ? 0 : curDateInfo.hour * 32}px)` }">
-                  <span v-for="h of hourSet" :class="['h-full flex-none text-center leading-33px', { 'opacity-50': h.disable }]">{{ h.hour.toString().padStart(2, 0) }}</span>
+                  <span @click="useSelectHour(h)" v-for="h of hourSet" :class="['h-full flex-none text-center leading-33px cursor-pointer', { 'opacity-50 cursor-not-allowed': h.disable }]">{{ h.hour.toString().padStart(2, 0) }}</span>
                 </div>
               </div>
             </div>
-            <div @wheel="handleMinuteWhell" class="flex-1 h-full overflow-hidden flex flex-col justify-start items-center">
+            <div @wheel="handleMinuteWhell" class="flex-1 h-full overflow-hidden flex flex-col justify-center items-center">
               <div class="w-full h-32px overflow-visible bg-[#E6EEFA]">
                 <div class="w-full h-full flex flex-col transition" :style="{ transform: `translateY(-${curDateInfo === null ? 0 : curDateInfo.minute * 32}px)` }">
-                  <span v-for="m of minuteSet" :class="['h-full flex-none text-center leading-33px', { 'opacity-50': m.disable }]">{{ m.minute.toString().padStart(2, 0) }}</span>
+                  <span @click="useSelectMinute(m)" v-for="m of minuteSet" :class="['h-full flex-none text-center leading-33px cursor-pointer', { 'opacity-50 cursor-not-allowed': m.disable }]">{{ m.minute.toString().padStart(2, 0) }}</span>
                 </div>
               </div>
             </div>

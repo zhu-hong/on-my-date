@@ -1,6 +1,6 @@
 {
   "name": "@zhu-hong/datepicker",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "main": "dist/index.es.js",
   "module": "dist/index.es.js",
   "types": "index.d.ts",
@@ -28,16 +28,16 @@
   },
   "license": "MIT",
   "author": "zhu-hong",
-  "homepage": "https://github.com/zhu-hong/oh-my-date",
+  "homepage": "https://github.com/zhu-hong/on-my-date",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zhu-hong/oh-my-date.git"
+    "url": "git+https://github.com/zhu-hong/on-my-date.git"
   },
   "keywords": [
     "datepicker",
     "vue date picker"
   ],
   "bugs": {
-    "url": "https://github.com/zhu-hong/oh-my-date/issues"
+    "url": "https://github.com/zhu-hong/on-my-date/issues"
   }
 }
