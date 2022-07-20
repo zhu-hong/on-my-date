@@ -91,10 +91,10 @@ export default {
       this.useEmit()
     },
     useSelectHour(hour) {
-      this.curtHour = hour
+      this.curtHour = Number(hour)
     },
     useSelectMinute(minute) {
-      this.curtMinute = minute
+      this.curtMinute = Number(minute)
     },
   },
   watch: {
