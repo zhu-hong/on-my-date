@@ -370,7 +370,7 @@ export default {
       if(this.curDateInfo !== null) {
         _HourThrottle += Math.abs(e.deltaY)
 
-        if(_HourThrottle < 250) return
+        if(_HourThrottle < 125) return
 
         const inc = e.deltaY > 0 ? 1 : -1
 
@@ -410,7 +410,7 @@ export default {
       if(this.curDateInfo !== null) {
         _MinuteThrottle += Math.abs(e.deltaY)
 
-        if(_MinuteThrottle < 250) return
+        if(_MinuteThrottle < 125) return
 
         const inc = e.deltaY > 0 ? 1 : -1
       
