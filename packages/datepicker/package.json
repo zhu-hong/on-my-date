@@ -13,8 +13,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build --mode lib": "vite build",
-    "prepublishOnly": "npm run build --mode lib"
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@zhu-hong/usedate": "workspace:*"
