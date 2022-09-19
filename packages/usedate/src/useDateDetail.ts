@@ -11,6 +11,7 @@ export function useDateDetail(time: number | string | null): IDateDetail | null 
   const day = d.getDay()
   const hour = d.getHours()
   const minute = d.getMinutes()
+  const second = d.getSeconds()
 
   return {
     dateStr: `${year}-${month}-${date}`,
@@ -20,6 +21,7 @@ export function useDateDetail(time: number | string | null): IDateDetail | null 
     day,
     hour, 
     minute,
+    second,
     timestamp: d.getTime(),
   }
 }
