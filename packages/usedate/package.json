@@ -1,6 +1,6 @@
 {
   "name": "@zhu-hong/usedate",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "date tool",
   "keywords": [
     "datematrix",
@@ -12,12 +12,16 @@
   "files": [
     "dist"
   ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "require": "./dist/index.cjs",
       "import": "./dist/index.mjs",
       "types": "./dist/index.d.ts"
-    }
+    },
+    "./*": "./*"
   },
   "scripts": {
     "dev": "vite",
