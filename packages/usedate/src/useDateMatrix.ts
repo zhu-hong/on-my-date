@@ -15,7 +15,7 @@ function getMonthTotalDay(year: number, month: number): number {
   }
 }
 
-function getMonthDaysArr(year: number, month: number, use_monday_start: boolean): IMatrixItem[][] {
+function getMonthDaysArr(year: number, month: number, monday_first: boolean): IMatrixItem[][] {
   let totalDay = getMonthTotalDay(year, month)
 
   let daysArr: IMatrixItem[][] = [
@@ -42,7 +42,7 @@ function getMonthDaysArr(year: number, month: number, use_monday_start: boolean)
 
     let curDateDay = curDate.getDay()
 
-    if(use_monday_start) {
+    if(monday_first) {
       curDateDay = [6, 0, 1, 2, 3, 4, 5][curDateDay]
     }
 
@@ -54,7 +54,7 @@ function getMonthDaysArr(year: number, month: number, use_monday_start: boolean)
       date,
       day: curDate.getDay(),
       inOtherMonth: false,
-      timestamp: curDate.getTime(),
+      timestamp: curDate.setHours(0,0,0,0),
     }
 
     if (curDateDay === 6) {
@@ -65,28 +65,28 @@ function getMonthDaysArr(year: number, month: number, use_monday_start: boolean)
   return daysArr
 }
 
-function getPrevMonthFillDays(year: number, month: number, length: number, use_monday_start: boolean): IMatrixItem[] {
+function getPrevMonthFillDays(year: number, month: number, length: number, monday_first: boolean): IMatrixItem[] {
   let prevMonth = month - 1
   if (prevMonth === 0) {
     prevMonth = 12
     year--
   }
 
-  const prevMonthDaysArr = getMonthDaysArr(year, prevMonth, use_monday_start).flat().filter((d) => d !== null)
+  const prevMonthDaysArr = getMonthDaysArr(year, prevMonth, monday_first).flat().filter((d) => d !== null)
   return prevMonthDaysArr.map((date) => {
     date.inOtherMonth = true
     return date
   }).slice(prevMonthDaysArr.length - length)
 }
 
-function getNextMonthFillDays(year: number, month: number, length: number, use_monday_start: boolean): IMatrixItem[] {
+function getNextMonthFillDays(year: number, month: number, length: number, monday_first: boolean): IMatrixItem[] {
   let nextMonth = month + 1
   if (nextMonth > 12) {
     nextMonth = 1
     year++
   }
 
-  const nextMonthDaysArr = getMonthDaysArr(year, nextMonth, use_monday_start).flat().filter((d) => d !== null)
+  const nextMonthDaysArr = getMonthDaysArr(year, nextMonth, monday_first).flat().filter((d) => d !== null)
   return nextMonthDaysArr.map((date) => {
     date.inOtherMonth = true
     return date
@@ -100,10 +100,10 @@ function verifyDate(year: number, month: number): boolean {
   return true
 }
 
-export function useDateMatrix(year: number = new Date().getFullYear(), month: number = new Date().getMonth() + 1, use_monday_start: boolean = false): IMatrixItem[][] {
+export function useDateMatrix(year: number = new Date().getFullYear(), month: number = new Date().getMonth() + 1, monday_first: boolean = false): IMatrixItem[][] {
   if(!verifyDate(year, month)) throw Error('this date is not validate')
 
-  const daysArr = getMonthDaysArr(year, month, use_monday_start)
+  const daysArr = getMonthDaysArr(year, month, monday_first)
 
   let beforeEmptyLength = -1
   daysArr.flat().find((d) => {
@@ -111,7 +111,7 @@ export function useDateMatrix(year: number = new Date().getFullYear(), month: nu
     return d !== null
   })
 
-  const prevMonthFillDays = getPrevMonthFillDays(year, month, beforeEmptyLength, use_monday_start)
+  const prevMonthFillDays = getPrevMonthFillDays(year, month, beforeEmptyLength, monday_first)
   for (let index = 0; index < beforeEmptyLength; index++) {
     daysArr[0][index] = prevMonthFillDays[index]
   }
@@ -125,7 +125,7 @@ export function useDateMatrix(year: number = new Date().getFullYear(), month: nu
     }
   })
 
-  const nextMonthFillDays = getNextMonthFillDays(year, month, afterEmptyLength, use_monday_start)
+  const nextMonthFillDays = getNextMonthFillDays(year, month, afterEmptyLength, monday_first)
   let fillNextMonthDaysLevel = daysArr.length - 1
   let fillNextMonthDaysIndex = 6
   for (let index = 0; index < afterEmptyLength; index++) {

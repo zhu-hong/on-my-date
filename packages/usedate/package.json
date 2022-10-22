@@ -1,6 +1,6 @@
 {
   "name": "@zhu-hong/usedate",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "date tool",
   "keywords": [
     "datematrix",
@@ -9,9 +9,6 @@
     "china lunar calendar",
     "农历"
   ],
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
