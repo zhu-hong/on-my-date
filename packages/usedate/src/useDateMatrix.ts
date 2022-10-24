@@ -1,4 +1,4 @@
-import { isLeapYear, month30day, month31day } from './util'
+import { isLeapYear, month30day, month31day, verifyDate } from './util'
 import type { IMatrixItem } from './types'
 
 function getMonthTotalDay(year: number, month: number): number {
@@ -33,32 +33,36 @@ function getMonthDaysArr(year: number, month: number, monday_first: boolean): IM
     Array.from({ length: 7 }, () => null),
   ]
 
+  
   let curDayLevel: number = 0
+  let initialDay: number = new Date(`${year}-${month}-1`).getDay()
 
   for (let date = 1; date <= totalDay; date++) {
-    const dateStr = `${year}-${month}-${date}`
-
-    const curDate = new Date(dateStr)
-
-    let curDateDay = curDate.getDay()
+    let curDateDay = initialDay
 
     if(monday_first) {
-      curDateDay = [6, 0, 1, 2, 3, 4, 5][curDateDay]
+      curDateDay = [6, 0, 1, 2, 3, 4, 5][initialDay]
     }
 
-
+    const dateStr: string = `${year}-${month}-${date}`
     daysArr[curDayLevel][curDateDay] = {
       dateStr,
       year,
       month,
       date,
-      day: curDate.getDay(),
+      day: initialDay,
       inOtherMonth: false,
-      timestamp: curDate.setHours(0,0,0,0),
+      timestamp: new Date(dateStr).setHours(0,0,0,0),
     }
 
-    if (curDateDay === 6) {
+    if(curDateDay === 6) {
       curDayLevel++
+    }
+
+    if(initialDay + 1 > 6) {
+      initialDay = 0
+    } else {
+      initialDay++
     }
   }
 
@@ -91,13 +95,6 @@ function getNextMonthFillDays(year: number, month: number, length: number, monda
     date.inOtherMonth = true
     return date
   }).slice(0, length).reverse()
-}
-
-function verifyDate(year: number, month: number): boolean {
-  if (year < 1990 || year > 2100) return false
-  if (month < 1 || month > 12) return false
-
-  return true
 }
 
 export function useDateMatrix(year: number = new Date().getFullYear(), month: number = new Date().getMonth() + 1, monday_first: boolean = false): IMatrixItem[][] {
